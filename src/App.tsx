@@ -6,6 +6,7 @@ import "./App.css";
 import ButtonAdd from "./components/ButtonAdd";
 import HeaderTxt from "./components/HeaderTxt";
 import GPACalculator from "./components/GPACalculator";
+import MPDirectory from "./components/MPDirectory";
 
 
 function App() {
@@ -66,6 +67,9 @@ imageUrl: "https://hallyu.idolinsights.com/wp-content/uploads/2025/07/baby-membe
 
   return (
     <>    
+      {/* MP Directory Component / คอมโพเนนต์ทำเนียบสมาชิกสภาผู้แทนราษฎร */}
+      <MPDirectory />
+
       {/* GPA Calculator Component / คอมโพเนนต์คำนวณ GPA */}
       <GPACalculator />
 
@@ -81,7 +85,7 @@ imageUrl: "https://hallyu.idolinsights.com/wp-content/uploads/2025/07/baby-membe
         <li key={index}
         className = {member.group === "BUS" ? "green-txt" : "red-txt"}>
           {member.nameTH} ({member.nameEN})
-          <img src = {member.imageUrl} alt={member.nameEN}/>
+          <img src = {member.imageUrl} alt={`${member.nameEN} profile picture`}/>
         </li>  
     ))} 
 
