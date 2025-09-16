@@ -1,33 +1,12 @@
 // MPDirectory.tsx - Member of Parliament Directory / ทำเนียบสมาชิกสภาผู้แทนราษฎร
-// Using React Hook Form + Zod validation with Tailwind CSS
+// Parliamentary Member Directory with Tailwind CSS styling
+// ทำเนียบสมาชิกสภาผู้แทนราษฎรพร้อม Tailwind CSS
 
 import { useState } from "react";
-// Note: Install required dependencies first:
-// npm install react-hook-form @hookform/resolvers zod tailwindcss
-
-// For now, using basic implementation without external dependencies
-// Remove comments when dependencies are installed
-
-// import { useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { z } from "zod";
-
-// Zod schema for validation (commented until dependencies are installed)
-// const MPSchema = z.object({
-//   prefix: z.string().min(1, "กรุณาเลือกคำนำหน้า / Please select prefix"),
-//   firstName: z.string().min(2, "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร / First name must be at least 2 characters"),
-//   lastName: z.string().min(2, "นามสกุลต้องมีอย่างน้อย 2 ตัวอักษร / Last name must be at least 2 characters"),
-//   photo: z.string().url("กรุณาใส่ URL รูปภาพที่ถูกต้อง / Please enter a valid image URL").optional(),
-//   workHistory: z.string().min(10, "ประวัติการทำงานต้องมีอย่างน้อย 10 ตัวอักษร / Work history must be at least 10 characters"),
-//   achievements: z.string().min(10, "ผลงานต้องมีอย่างน้อย 10 ตัวอักษร / Achievements must be at least 10 characters"),
-//   ministerPosition: z.string().optional(),
-//   ministry: z.string().optional(),
-//   politicalParty: z.string().min(1, "กรุณาระบุพรรคการเมือง / Please specify political party")
-// });
 
 interface MP {
   id: number;
-  
+  prefix: string;
   firstName: string;
   lastName: string;
   photo?: string;
@@ -151,7 +130,7 @@ export default function MPDirectory() {
     }
   };
 
-  const handleInputChange = (field: keyof Omit<MP, 'id'>, value: string) => {
+  const handleInputChange = (field: keyof MP, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: "" }));

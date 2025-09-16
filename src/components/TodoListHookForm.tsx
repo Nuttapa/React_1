@@ -1,10 +1,10 @@
-// TodoListHookForm.tsx - React Hook Form Example (Commented - requires installation)
-// ตัวอย่าง React Hook Form (คอมเมนต์ - ต้องติดตั้ง)
+// TodoListHookForm.tsx - React Hook Form + Zod Implementation
+// การใช้งาน React Hook Form + Zod
 
 import { useState } from "react";
-// import { useForm } from "react-hook-form"; // Requires: npm install react-hook-form
-// import { zodResolver } from "@hookform/resolvers/zod"; // Requires: npm install @hookform/resolvers
-// import { z } from "zod"; // Requires: npm install zod
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 type Task = {
     title: string;
@@ -12,54 +12,53 @@ type Task = {
     dueDate: string;
 };
 
-// Commented out Zod schema - requires installation
-// const TaskSchema = z.object({
-//     title: z.string().min(1, "กรุณากรอกชื่องาน"),
-//     type: z.string().optional(),
-//     dueDate: z.string().optional(),
-// });
+// Zod schema for validation
+const TaskSchema = z.object({
+    title: z.string().min(1, "กรุณากรอกชื่องาน / Please enter task title"),
+    type: z.string().optional(),
+    dueDate: z.string().optional(),
+});
 
-// Basic version without React Hook Form for now
-// เวอร์ชั่นพื้นฐานโดยไม่ใช้ React Hook Form ก่อน
+type FormData = z.infer<typeof TaskSchema>;
+
+// React Hook Form implementation
 export default function TodoHookFormApp() {
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [title, setTitle] = useState<string>("");
-    const [type, setType] = useState<string>("");
-    const [dueDate, setDueDate] = useState<string>("");
-    const [errors, setErrors] = useState<{[key: string]: string}>({});
+    
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm<FormData>({
+        resolver: zodResolver(TaskSchema),
+        defaultValues: {
+            title: "",
+            type: "",
+            dueDate: ""
+        }
+    });
 
-    const validateForm = () => {
-        const newErrors: {[key: string]: string} = {};
-        if (!title.trim()) newErrors.title = "กรุณากรอกชื่องาน";
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const onAdd = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!validateForm()) return;
-
-        const newTask: Task = { title, type, dueDate };
+    const onSubmit = (data: FormData) => {
+        const newTask: Task = {
+            title: data.title,
+            type: data.type || "",
+            dueDate: data.dueDate || ""
+        };
         setTasks((prev) => [...prev, newTask]);
-        
-        // Reset form / รีเซ็ตฟอร์ม
-        setTitle("");
-        setType("");
-        setDueDate("");
-        setErrors({});
+        reset(); // Reset form after submission
     };
 
     return (
         <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-            <h1>My To-do List (Basic Version) / รายการงาน (เวอร์ชั่นพื้นฐาน)</h1>
+            <h1>My To-do List (React Hook Form + Zod) / รายการงาน (React Hook Form + Zod)</h1>
 
-            <form onSubmit={onAdd} style={{ marginBottom: "20px" }}>
+            <form onSubmit={handleSubmit(onSubmit)} style={{ marginBottom: "20px" }}>
                 <div style={{ marginBottom: "10px" }}>
                     <input
                         type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="งานที่ต้องทำ..."
+                        {...register("title")}
+                        placeholder="งานที่ต้องทำ... / Task to do..."
                         style={{ 
                             width: "100%", 
                             padding: "8px", 
@@ -68,28 +67,26 @@ export default function TodoHookFormApp() {
                             borderRadius: "4px"
                         }}
                     />
-                    {errors.title && <div style={{ color: "red", fontSize: "14px" }}>{errors.title}</div>}
+                    {errors.title && <div style={{ color: "red", fontSize: "14px" }}>{errors.title.message}</div>}
                 </div>
 
                 <div style={{ marginBottom: "10px" }}>
                     <select 
-                        value={type} 
-                        onChange={(e) => setType(e.target.value)}
+                        {...register("type")}
                         style={{ width: "100%", padding: "8px", border: "1px solid #ccc", borderRadius: "4px" }}
                     >
-                        <option value="">เลือกประเภทงาน</option>
-                        <option value="เรียน">เรียน</option>
-                        <option value="ทำงาน">ทำงาน</option>
-                        <option value="บ้าน">งานบ้าน</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
+                        <option value="">เลือกประเภทงาน / Select task type</option>
+                        <option value="เรียน">เรียน / Study</option>
+                        <option value="ทำงาน">ทำงาน / Work</option>
+                        <option value="บ้าน">งานบ้าน / Home</option>
+                        <option value="อื่นๆ">อื่นๆ / Others</option>
                     </select>
                 </div>
 
                 <div style={{ marginBottom: "15px" }}>
                     <input 
                         type="date" 
-                        value={dueDate} 
-                        onChange={(e) => setDueDate(e.target.value)}
+                        {...register("dueDate")}
                         style={{ width: "100%", padding: "8px", border: "1px solid #ccc", borderRadius: "4px" }}
                     />
                 </div>
@@ -139,13 +136,16 @@ export default function TodoHookFormApp() {
                 )}
             </div>
 
-            {/* Instructions for React Hook Form */}
-            <div style={{ marginTop: "30px", padding: "15px", backgroundColor: "#e9ecef", borderRadius: "4px" }}>
-                <h4>คำแนะนำการใช้ React Hook Form:</h4>
-                <p>To enable React Hook Form features, install dependencies:</p>
-                <code style={{ display: "block", padding: "5px", backgroundColor: "white", marginTop: "5px" }}>
-                    npm install react-hook-form @hookform/resolvers zod
-                </code>
+            {/* React Hook Form + Zod Features */}
+            <div style={{ marginTop: "30px", padding: "15px", backgroundColor: "#d4edda", borderRadius: "4px" }}>
+                <h4>✅ React Hook Form + Zod Features Enabled / คุณสมบัติพร้อมใช้แล้ว:</h4>
+                <ul>
+                    <li>✅ Form validation with Zod schema / ตรวจสอบฟอร์มด้วย Zod</li>
+                    <li>✅ React Hook Form integration / การรวม React Hook Form</li>
+                    <li>✅ Automatic form reset / รีเซ็ตฟอร์มอัตโนมัติ</li>
+                    <li>✅ Type-safe form handling / การจัดการฟอร์มที่ปลอดภัย</li>
+                    <li>✅ Bilingual interface / อินเตอร์เฟซสองภาษา</li>
+                </ul>
             </div>
         </div>
     );

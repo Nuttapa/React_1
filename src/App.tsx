@@ -11,8 +11,8 @@ import MPDirectory from "./components/MPDirectory";
 
 function App() {
   const [number, setNumber] = useState(0);
-  const [name, setName] = useState("CSMJU");
-  const [message, setMessage] = useState("สอบเสร็จแล้ว สบายใจจัง");
+  const [name] = useState("CSMJU");
+  const [message] = useState("สอบเสร็จแล้ว สบายใจจัง");
   const status = true;
   const [fontSize, setFontSize] = useState(3);
 
