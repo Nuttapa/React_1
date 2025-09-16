@@ -27,7 +27,7 @@ import { useState } from "react";
 
 interface MP {
   id: number;
-  prefix: string;
+  
   firstName: string;
   lastName: string;
   photo?: string;
